@@ -13,7 +13,7 @@ import (
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	datFile := flag.String("qqwry", "./qqwry.dat", "纯真 IP 库的地址")
-	port := flag.String("port", "2060", "HTTP 请求监听端口号")
+	port := flag.String("port", "1117", "HTTP 请求监听端口号")
 	flag.Parse()
 
 	IPData.FilePath = *datFile
@@ -42,6 +42,7 @@ func main() {
 func findIP(w http.ResponseWriter, r *http.Request) {
 	res := NewResponse(w, r)
 
+	log.Println(r.URL)
 	ip := r.Form.Get("ip")
 
 	if ip == "" {
@@ -53,10 +54,12 @@ func findIP(w http.ResponseWriter, r *http.Request) {
 
 	qqWry := NewQQwry()
 
-	rs := map[string]ResultQQwry{}
+	s := ResultQQwry{}
+	rs := []ResultQQwry{}
 	if len(ips) > 0 {
 		for _, v := range ips {
-			rs[v] = qqWry.Find(v)
+			s = qqWry.Find(v)
+			rs = append(rs, s)
 		}
 	}
 
